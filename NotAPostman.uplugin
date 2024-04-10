@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "NotAPostman",
+	"Description": "A simple web API testing application. An analogue of such applications as Postman, Thunder, etc. Just for fun!",
+	"Category": "Other",
+	"CreatedBy": "lpestl",
+	"CreatedByURL": "https://github.com/lpestl/NotAPostman",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "NotAPostman",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		}
+	]
+}
