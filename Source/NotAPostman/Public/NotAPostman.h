@@ -7,6 +7,8 @@
 
 class FToolBarBuilder;
 class FMenuBuilder;
+class SDockTab;
+class FUICommandList;
 
 class FNotAPostmanModule : public IModuleInterface
 {
@@ -23,8 +25,8 @@ private:
 
 	void RegisterMenus();
 
-	TSharedRef<class SDockTab> OnSpawnPluginTab(const class FSpawnTabArgs& SpawnTabArgs);
+	TSharedRef<SDockTab> OnSpawnPluginTab(const class FSpawnTabArgs& SpawnTabArgs);
 
 private:
-	TSharedPtr<class FUICommandList> PluginCommands;
+	TSharedPtr<FUICommandList> PluginCommands;
 };
