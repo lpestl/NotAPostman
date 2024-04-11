@@ -8,18 +8,24 @@
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Text/STextBlock.h"
 #include "ToolMenus.h"
+#include "Widgets/NotAPostmanLayout.h"
 
 static const FName NotAPostmanTabName("NotAPostman");
+
+DEFINE_LOG_CATEGORY( NotAPostmanLog );
 
 #define LOCTEXT_NAMESPACE "FNotAPostmanModule"
 
 void FNotAPostmanModule::StartupModule()
 {
-	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-	
+	UE_LOG( NotAPostmanLog, Log, TEXT("NotAPostmanModule => StartupModule") );
+
+	// Init style
 	FNotAPostmanStyle::Initialize();
 	FNotAPostmanStyle::ReloadTextures();
-
+	// Init UI
+	FNotAPostmanLayout::Initialize();
+	
 	FNotAPostmanCommands::Register();
 	
 	PluginCommands = MakeShareable(new FUICommandList);
@@ -34,22 +40,30 @@ void FNotAPostmanModule::StartupModule()
 	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(NotAPostmanTabName, FOnSpawnTab::CreateRaw(this, &FNotAPostmanModule::OnSpawnPluginTab))
 		.SetDisplayName(LOCTEXT("FNotAPostmanTabTitle", "NotAPostman"))
 		.SetMenuType(ETabSpawnerMenuType::Hidden);
+
+#if IS_PROGRAM
+	// Note: TThis call allows you to open a window when the program starts.
+	// In plugin mode, the button in the toolbar will be responsible for opening the window.
+	FNotAPostmanLayout::Get().RestoreLayout();
+#endif
 }
 
 void FNotAPostmanModule::ShutdownModule()
 {
-	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
-	// we call this function before unloading the module.
-
 	UToolMenus::UnRegisterStartupCallback(this);
 
 	UToolMenus::UnregisterOwner(this);
-
+	
+	// Shutdown UI
+	FNotAPostmanLayout::Shutdown();	
+	// Shutdown style
 	FNotAPostmanStyle::Shutdown();
 
 	FNotAPostmanCommands::Unregister();
 
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(NotAPostmanTabName);
+	
+	UE_LOG( NotAPostmanLog, Log, TEXT("NotAPostmanModule => ShutdownModule") )
 }
 
 TSharedRef<SDockTab> FNotAPostmanModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs)
