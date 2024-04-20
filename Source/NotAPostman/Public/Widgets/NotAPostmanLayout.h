@@ -25,7 +25,15 @@ public:
 
 	void DisplayInProgressNotification(const FText& Text);
 	void RemoveInProgressNotification();
-	
+
+protected:
+	void RegistrTabSpawner();
+	void RegistrMenuAndButtons();
+
+	TSharedRef< SDockTab > SpawnMainTab( const FSpawnTabArgs& Args );
+	TSharedRef< SDockTab > SpawnSubTab( const FSpawnTabArgs& Args, FName TabIdentifier );
+
+	static TSharedRef< class FNotAPostmanLayout> Create();
 private:
 	static TSharedPtr< class FNotAPostmanLayout > LayoutInstance;
 	TSharedPtr< FTabManager::FLayout > MainLayout = nullptr;

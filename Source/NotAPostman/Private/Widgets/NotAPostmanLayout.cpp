@@ -3,8 +3,16 @@
 
 #include "Widgets/NotAPostmanLayout.h"
 
+#include "NotAPostmanCommands.h"
+
 
 #define LOCTEXT_NAMESPACE "NotAPostmanLayout"
+
+namespace NotAPostmanMenu
+{
+	TSharedRef< FWorkspaceItem > MenuRoot = FWorkspaceItem::NewGroup( NSLOCTEXT( "NotAPostman", "MenuRoot", "MenuRoot" ) );
+	TSharedRef< FWorkspaceItem > SubTabs = MenuRoot->AddGroup( NSLOCTEXT( "NotAPostman", "SecondaryTabs", "NotAPostman sections Tabs" ) );
+}
 
 TSharedPtr< FNotAPostmanLayout > FNotAPostmanLayout::LayoutInstance = nullptr;
 
@@ -12,10 +20,21 @@ static TSharedPtr< FTabManager > NotAPostmanTabManager;
 
 void FNotAPostmanLayout::Initialize()
 {
+	if (!LayoutInstance.IsValid())
+	{
+		LayoutInstance = Create();
+
+		ensure( LayoutInstance.IsUnique() );
+		LayoutInstance->RegistrTabSpawner();
+	}
 }
 
 void FNotAPostmanLayout::Shutdown()
 {
+	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner( FName("NotAPostman") );
+	FNotAPostmanCommands::Unregister();
+
+	ensure( LayoutInstance.IsUnique() );
 }
 
 FNotAPostmanLayout& FNotAPostmanLayout::Get()
@@ -63,4 +82,25 @@ void FNotAPostmanLayout::DisplayInProgressNotification(const FText& Text)
 void FNotAPostmanLayout::RemoveInProgressNotification()
 {
 	// TODO:
+}
+
+void FNotAPostmanLayout::RegistrTabSpawner()
+{
+	FNotAPostmanCommands::Register();
+
+	PluginCommands = MakeShareable( new FUICommandList );
+	PluginCommands->MapAction(
+		FNotAPostmanCommands::Get().OpenPluginWindow,
+		FExecuteAction::CreateRaw( this, &FNotAPostmanLayout::RestoreLayout ),
+		FCanExecuteAction(),
+		FIsActionChecked(),
+		FIsActionButtonVisible());
+
+	UToolMenus::RegisterStartupCallback(
+		FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FNotAPostmanLayout::RegistrMenuAndButtons));
+}
+
+TSharedRef<FNotAPostmanLayout> FNotAPostmanLayout::Create()
+{
+	return MakeShareable( new FNotAPostmanLayout() );
 }
